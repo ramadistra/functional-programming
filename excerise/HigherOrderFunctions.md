@@ -84,7 +84,7 @@ flip f a b = f b a
 map (+1) xs
 ```
 2. `[x+y|x<-xs,y<-ys]`
-```hasekll
+```haskell
 concat (map (\x -> map (+x) ys) xs)
 ```
 
@@ -98,7 +98,7 @@ map ((+3) . fst) xs
 ```
 5. `[x+4|(x,y)<-xys,x+y<5] `
 ```haskell
-map ((+4) . fst) (filter (\(x,y) -> x + y < 5) xys) 
+map ((+4) . fst) $ filter (\(x,y) -> x + y < 5) xys
 ```
 6. `[x + 5 | Just x <- mxs]`
 ```haskell
@@ -109,7 +109,7 @@ in
   map ((+5) . \(Just x) -> x) (filter isJust mxs) 
 ```
 
-2b.
+2b. Can you it the other way around? I.e. rewrite the following expressions as list comprehensions.
 1. `map (+3) xs`
 ```haskell
 [x+3 | x <- xs]
