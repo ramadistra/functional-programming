@@ -99,6 +99,23 @@ countDeclerations = foldExpr $
                  }
 
 x = Let "x" (C 2) $
-      Let "y" (C 3) $ 
+      Let "y" y $ 
         Let "x" (V "y") $
           V "x" :* V "y"
+
+y = Let "y" (V "x" :+ C 1) $ (V "x" :+ C 3)
+
+actualX = let x = 2
+  in 
+    let y = let y = x + 1 in x + 3
+      in 
+        let x = y
+          in x * y
+
+main = do
+  if actualX == evaluate x
+    then putStrLn "PASS: recursive evaluate matches"
+    else putStrLn "ERROR: recursive evaluate does not match"
+  if actualX == evalWithFold x
+    then putStrLn "PASS: evaluate matches"
+    else putStrLn "ERROR: fold evaluate does not match"
