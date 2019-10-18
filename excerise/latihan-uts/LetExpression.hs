@@ -65,6 +65,17 @@ substitueWithFold (v0, e0, e1) = foldExpr cmb e1
                          }
     sub v1 = if (v0 == v1) then e0 else (V v1)
 
+countConstants :: Expr -> Int
+countConstants = foldExpr $ 
+  ExprCombinator { constant = \x -> 1
+                 , plus = (+)
+                 , minus = (+)
+                 , mul = (+)
+                 , divide = (+)
+                 , var = \x -> 0
+                 , bind = \(_, e0, e1) -> countConstants e0 + countConstants e1
+                 }
+
 x = Let "x" (C 2) $
       Let "y" (C 3) $ 
         Let "x" (V "y") $
