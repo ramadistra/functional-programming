@@ -76,6 +76,28 @@ countConstants = foldExpr $
                  , bind = \(_, e0, e1) -> countConstants e0 + countConstants e1
                  }
 
+countOperators :: Expr -> Int
+countOperators = foldExpr $ 
+  ExprCombinator { constant = \x -> 0
+                 , plus = (+) . (+ 1)
+                 , minus = (+) . (+ 1)
+                 , mul = (+) . (+ 1)
+                 , divide = (+) . (+ 1)
+                 , var = \x -> 0
+                 , bind = \(_, e0, e1) -> countOperators e0 + countOperators e1
+                 }
+
+countDeclerations :: Expr -> Int
+countDeclerations = foldExpr $ 
+  ExprCombinator { constant = \x -> 0
+                 , plus = (+)
+                 , minus = (+)
+                 , mul = (+)
+                 , divide = (+)
+                 , var = \x -> 0
+                 , bind = \(_, e0, e1) -> countDeclerations e0 + countDeclerations e1 + 1
+                 }
+
 x = Let "x" (C 2) $
       Let "y" (C 3) $ 
         Let "x" (V "y") $
