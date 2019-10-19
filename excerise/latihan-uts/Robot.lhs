@@ -553,3 +553,4 @@ uses the following convention:
 > forLoop :: [a] -> (a -> Robot ()) -> Robot ()
 > forLoop = flip mapM_
 
+> turnBack = turnRight >> turnRight
