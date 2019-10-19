@@ -1,3 +1,5 @@
+import Control.Monad
+
 data Expr = C Float 
           | Expr :+ Expr 
           | Expr :- Expr 
@@ -6,6 +8,7 @@ data Expr = C Float
           | V String 
           | Let String Expr Expr
   deriving Show
+
 
 subst :: String -> Expr -> Expr -> Expr
 subst v0 e0 (V v1) = if (v0 == v1) then e0 else (V v1)
@@ -98,6 +101,32 @@ countDeclerations = foldExpr $
                  , bind = \(_, e0, e1) -> countDeclerations e0 + countDeclerations e1 + 1
                  }
 
+data EvaluationError = DivisionByZero
+
+evaluateWithError :: Expr -> Either EvaluationError Float
+evaluateWithError = foldExpr $
+  ExprCombinator { constant = Right
+                 , plus = liftM2 (+)
+                 , minus = liftM2 (-)
+                 , mul = liftM2 (*)
+                 , divide = divide
+                 , var = undefined
+                 , bind = evaluateWithError . substitueWithFold
+                 }
+  where
+    divide left right = do
+      x <- left
+      y <- right
+      if x == 0 && y == 0
+        then Left DivisionByZero
+        else Right (x / y)
+
+hasDivisionByZeroError :: Expr -> Bool
+hasDivisionByZeroError expr = 
+  case evaluateWithError expr of
+    Left DivisionByZero -> True
+    _ -> False
+
 x = Let "x" (C 2) $
       Let "y" y $ 
         Let "x" (V "y") $
@@ -111,6 +140,8 @@ actualX = let x = 2
       in 
         let x = y
           in x * y
+
+z = Let "y" (C 0) $ (V "y" :/ C 0)
 
 main = do
   if actualX == evaluate x
