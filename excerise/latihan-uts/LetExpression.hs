@@ -127,6 +127,17 @@ hasDivisionByZeroError expr =
     Left DivisionByZero -> True
     _ -> False
 
+-- No 9
+combineExpression :: Foldable t => (Expr -> Expr -> Expr) -> t Expr -> Expr
+combineExpression = foldl1
+
+-- Contoh pengunaan
+sumExpr = combineExpression (:+)
+
+p = Let "x" (C 2) $
+    sumExpr [(V "x" :+ C 1), (V "x" :* C 2), C 5]
+
+    
 x = Let "x" (C 2) $
       Let "y" y $ 
         Let "x" (V "y") $
